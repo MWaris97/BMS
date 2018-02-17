@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 
 public class BackgroundWorker extends AsyncTask<String,Void,String> {
 
+    static boolean isUser = true;
     Context context;
     AlertDialog alertDialog;
     ProgressDialog progress;
@@ -35,7 +36,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
     protected String doInBackground(String... params) {
         String type = params[0];
 
-        String login_URL = "http://172.16.10.56/user_login.php";
+        String login_URL = "http://172.16.10.56/test.php";
 
         if(type.equals("login")){
             try {
@@ -49,7 +50,6 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
                 OutputStream outputStream = httpURLConnection.getOutputStream();
-                System.out.println("sorab");
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
                 String post_data = URLEncoder.encode("user_name", "UTF-8")+"="+URLEncoder.encode(user_name, "UTF-8")+"&"
                         +URLEncoder.encode("password", "UTF-8")+"="+URLEncoder.encode(password, "UTF-8");
