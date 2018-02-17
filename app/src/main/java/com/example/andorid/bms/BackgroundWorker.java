@@ -1,6 +1,7 @@
 package com.example.andorid.bms;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,23 +24,20 @@ import java.net.URLEncoder;
 
 public class BackgroundWorker extends AsyncTask<String,Void,String> {
 
-
-
     Context context;
     AlertDialog alertDialog;
+    ProgressDialog progress;
     BackgroundWorker(Context ctx){
         context = ctx;
     }
-
 
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
 
-        String login_URL = "http://172.16.10.56/login.php";
+        String login_URL = "http://172.16.10.56/user_login.php";
 
-        //System.out.println("waris");
-        if(true){
+        if(type.equals("login")){
             try {
                 String user_name = params[1];
                 String password = params[2];
@@ -65,7 +63,6 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                 String result = "";
                 String line = "";
 
-
                 while((line = bufferedReader.readLine()) != null){
                     result += line;
                 }
@@ -87,21 +84,59 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
     @Override
     protected void onPreExecute() {
         alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Login Status");
+        progress = ProgressDialog.show(context, "", "Logging in...");
     }
 
     @Override
     protected void onPostExecute(String result) {
-        //alertDialog.setMessage(result);
-        //alertDialog.show();
-        if(result.equals("Login Success")){
-            Intent intent = new Intent(context,chay.class);
+
+        if(result.equals("User")){
+            progWait(1000);
+            progress.dismiss();
+            Intent intent = new Intent(context, chay.class);
             context.startActivity(intent);
+        }
+
+        else if(result.equals("No user")){
+            progWait(500);
+            alertDialog.setTitle("Login Status");
+            alertDialog.setMessage("Flat not found");
+            alertDialog.show();
+        }
+
+        else if(result.equals("Admin")){
+            progWait(500);
+            alertDialog.setTitle("Login Status");
+            alertDialog.setMessage(result);
+            alertDialog.show();
+    }
+
+        if(result.equals("AdminLogin success")){
+            progWait(1000);
+            progress.dismiss();
+            Intent intent = new Intent(context, chay.class);
+            context.startActivity(intent);
+        }
+
+        else if(result.equals("AdminLogin Unsuccessful")){
+            progWait(500);
+            alertDialog.setTitle("Login Status");
+            alertDialog.setMessage("Admin not found");
+            alertDialog.show();
         }
     }
 
     @Override
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
+    }
+
+    void progWait(int t){
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        progress.dismiss();
     }
 }
